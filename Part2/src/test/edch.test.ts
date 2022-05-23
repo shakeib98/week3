@@ -1,3 +1,4 @@
+import { getJsonWalletAddress } from 'ethers/lib/utils';
 import {
   buildEddsaModule,
   decrypt,
@@ -7,7 +8,10 @@ import {
   EdDSA
 } from '../index';
 
+jest.setTimeout(300000);
+
 describe('ECDH test', () => {
+
   let eddsa: EdDSA;
   beforeAll(async () => {
     eddsa = await buildEddsaModule();
@@ -26,9 +30,10 @@ describe('ECDH test', () => {
     for (let i = 0; i < 5; i++) {
       aliceMessage.push(BigInt(Math.floor(Math.random() * 50)));
     }
-    //console.log('plaintext:', aliceMessage);
+    console.log('plaintext:', aliceMessage);
     // Alice encrypt with her private key and bob pubkey
     const ciphertext = await encrypt(aliceMessage, ecdhSharedKey);
+    console.log(ciphertext)
 
     // decrypting using bob's private key + alice pubkey
     const ecdhbobSharedKey = await genEcdhSharedKey({
@@ -37,6 +42,8 @@ describe('ECDH test', () => {
       pubKey: alicePubKey,
     });
     const decryptedMessage = await decrypt(ciphertext, ecdhbobSharedKey);
+
+    console.log(decryptedMessage)
     expect(decryptedMessage).toStrictEqual(aliceMessage);
   });
 
